@@ -1,0 +1,106 @@
+﻿/**
+ * Element specification
+ */
+
+body {
+    margin: 0px;
+    overflow-x: hidden;
+}
+
+/**
+ * class specification
+ */
+
+.head_button {
+    background-color: #f6f6f6;
+    border: 0px solid;
+    font-size: 30px;
+    padding: 0px;
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+}
+
+.head_button:focus {
+    outline: 0px;
+}
+
+.head_button:disabled {
+    opacity: 0.3;
+}
+
+.bottom_border {
+     border-bottom: 1px solid #c8c7cc;
+}
+
+.item_label {
+    font-size: 32px;
+}
+
+.check_icon {
+    display: block;
+    margin-right: 27px;
+}
+
+/**
+ * id specification
+ */
+
+#body_box {
+    background-color: #efeef4;
+    width: 750px;
+    height: 1334px;
+    margin: 0 auto;
+}
+
+#head_box {
+     background-color: #f6f6f6;
+     height: 100px;
+     position: relative;
+     text-align: center;
+}
+
+#cancel_button {
+    left: 34px;
+}
+
+#head_label {
+    font-size: 30px;
+    color: #000000;
+    display: inline-block;
+    line-height: 100px;
+}
+
+#done_button {
+    right: 34px;
+}
+
+#timeout_box {
+    padding-left: 34px;
+    margin-top: 100px;
+    background-color: #ffffff;
+    border-top: 1px solid #c8c7cc;
+    border-bottom: 1px solid #c8c7cc;
+    border-left: 0px;
+    border-right: 0px;
+}
+
+#timeout_table {
+    table-layout: fixed;
+    margin-left: -1px;
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+}
+
+#timeout_table tr {
+    height: 88px;
+}
+
+#timeout_table_td_1 {
+    width: 90%;
+}
+
+#timeout_table_td_2 {
+    padding-right: 27px;
+}

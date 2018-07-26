@@ -1,0 +1,4 @@
+<resources>
+  <string name="app_name">File cloud upload</string>
+  <string name="keystore_pass">password</string>
+</resources>

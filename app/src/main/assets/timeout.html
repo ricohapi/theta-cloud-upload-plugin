@@ -1,0 +1,123 @@
+<html lang="ja">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>THETA360 setting</title>
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="js/jquery.i18n.properties.js"></script>
+    <script type="text/javascript" src="js/i18n.js"></script>
+    <meta name="viewport" content="width=750">
+    <link rel="stylesheet" type="text/css" href="css/timeout_design.css">
+  </head>
+
+  <body>
+    <script>
+
+      $(function(){
+        /* Embed multilingual strings */
+        updateMessage();
+
+        changeTimeoutCheck($("#no_operation_timeout_minute").val());
+      });
+
+      function cancel() {
+        window.location.href = "/index.html";
+      }
+
+      function done() {
+        $("#timeout_form").submit();
+      }
+
+      function changeTimeoutCheck(timeout) {
+        $('#check_timeout_3').hide();
+        $('#check_timeout_5').hide();
+        $('#check_timeout_10').hide();
+        $('#check_timeout_20').hide();
+        $('#check_timeout_auto').hide();
+        if (timeout == "3") {
+            $('#check_timeout_3').show();
+        } else if (timeout == "5") {
+            $('#check_timeout_5').show();
+        } else if (timeout == "10") {
+            $('#check_timeout_10').show();
+        } else if (timeout == "20") {
+            $('#check_timeout_20').show();
+        } else {
+            $('#check_timeout_auto').show();
+        }
+      }
+
+      function selectTimeout(timeout) {
+        $("#no_operation_timeout_minute").val(timeout);
+        changeTimeoutCheck(timeout);
+      }
+    </script>
+
+    <div id="body_box">
+      <div id="head_box">
+        <button id="cancel_button" type="button" onclick="cancel()" class="i18n_CANCEL head_button"></button>
+        <label id="head_label" class="i18n_TIMEOUT"></label>
+        <button id="done_button" type="button" onclick="done()" class="i18n_DONE head_button"></button>
+      </div>
+
+      <div id="timeout_box">
+        <table id="timeout_table">
+          <tr class="bottom_border" onclick="selectTimeout('3')">
+            <td id="timeout_table_td_1">
+              <label id="timeout_3" class="i18n_add_MINUTE item_label">3</label>
+            </td>
+            <td id="timeout_table_td_2">
+              <img id="check_timeout_3" src="img/101.png" class="check_icon">
+            </td>
+          </tr>
+          <tr class="bottom_border" onclick="selectTimeout('5')">
+            <td>
+              <label id="timeout_5" class="i18n_add_MINUTE item_label">5</label>
+            </td>
+            <td>
+              <img id="check_timeout_5" src="img/101.png" class="check_icon">
+            </td>
+          </tr>
+          <tr class="bottom_border" onclick="selectTimeout('10')">
+            <td>
+              <label id="timeout_10" class="i18n_add_MINUTE item_label">10</label>
+            </td>
+            <td>
+              <img id="check_timeout_10" src="img/101.png" class="check_icon">
+            </td>
+          </tr>
+          <tr class="bottom_border" onclick="selectTimeout('20')">
+            <td>
+              <label id="timeout_20" class="i18n_add_MINUTE item_label">20</label>
+            </td>
+            <td>
+              <img id="check_timeout_20" src="img/101.png" class="check_icon">
+            </td>
+          </tr>
+          <tr onclick="selectTimeout('-1')">
+            <td>
+              <label id="timeout_auto" class="i18n_DISABLED item_label"></label>
+            </td>
+            <td>
+              <img id="check_timeout_auto" src="img/101.png" class="check_icon">
+            </td>
+          </tr>
+        </table>
+
+        <form id="timeout_form" action="/index.html" method="post" hidden>
+          <input id="no_operation_timeout_minute" name="no_operation_timeout_minute" value="#NO_OPERATION_TIMEOUT_MINUTE#"/>
+          <!--
+          <select id="no_operation_timeout_minute_text" name="no_operation_timeout_minute" >
+            <option value="3">3</option>
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="-1">無効</option>
+          </select>
+          <button type="submit" name="setting" value="update_setting">送信</button>
+          -->
+        </form>
+      </div>
+    </div>
+  </body>
+</html>
+

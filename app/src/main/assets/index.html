@@ -1,0 +1,192 @@
+<html lang="ja">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>THETA360 setting</title>
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="js/mprogress.min.js"></script>
+    <script type="text/javascript" src="js/jquery.i18n.properties.js"></script>
+    <script type="text/javascript" src="js/i18n.js"></script>
+    <meta name="viewport" content="width=750">
+    <link rel="stylesheet" type="text/css" href="css/mprogress.min.css">
+    <link rel="stylesheet" type="text/css" href="css/design.css">
+  </head>
+
+  <body>
+    <script>
+
+      #JS_INJECTION#
+
+      var isUploading = false;
+
+      var mprogress;
+
+      $(function(){
+        /* Embed multilingual strings */
+        updateMessage();
+
+        $("#timeout_value").text($("#no_operation_timeout_minute_text option:selected").text());
+
+        if ($("#upload_user_id").text() == "") {
+          changeNotLoggedInPage();
+          $("#upload_user_id").text(UNREGISTERED);
+        } else {
+          changeNotUploadingPage();
+          setInterval("checkUploading()", 1000);
+        }
+
+        mprogress = new Mprogress({parent: "#progress_bar", minimum: 0});
+      });
+
+      function changeNotLoggedInPage() {
+        $("#upload_start_button").prop("disabled", true);
+        $("#upload_start_button").show();
+        $("#upload_stop_button").hide();
+      }
+
+      function changeNotUploadingPage() {
+        $("#upload_start_button").prop("disabled", false);
+        $("#upload_start_button").show();
+        $("#upload_stop_button").hide();
+      }
+
+      function changeUploadingPage() {
+        $("#upload_start_button").hide();
+        $("#upload_stop_button").show();
+      }
+
+      function checkUploading() {
+        $.ajax({
+          url: '/check_uploading',
+          type: 'GET',
+          dataType: 'json',
+          cache: false,
+          timeout: 5000
+        })
+        .done(function(data) {
+          var status = data["isUploading"];
+          if (status == 0 && isUploading) {
+            changeNotUploadingPage();
+            isUploading = false;
+            endProgress();
+          } else if (status == 1) {
+            changeProgress(data["current"], data["all"]);
+            if (!isUploading) {
+              changeUploadingPage();
+              isUploading = true;
+            }
+          }
+        });
+      }
+
+      function changeProgress(current, all) {
+        $("#progress_box").css("visibility","visible");
+        if (current >= all) {
+          mprogress.set(0.9999);
+          $("#progress_label").text(all + "/" + all);
+        } else {
+          mprogress.set(current / all);
+          $("#progress_label").text(UPLOADING + ": " + (current + 1) + "/" + all);
+        }
+      }
+
+      function endProgress() {
+        $("#progress_box").css("visibility","hidden");
+      }
+
+      function login() {
+        $("#login_form").submit();
+      }
+
+      function timeout() {
+        $("#timeout_form").submit();
+      }
+
+      function upload() {
+        $.ajax({
+          url: '/upload',
+          type: 'POST',
+          dataType: 'text',
+          cache: false,
+          timeout: 5000
+        });
+      }
+
+      function end() {
+        $.ajax({
+          url: '/end',
+          type: 'GET',
+          dataType: 'text',
+          cache: false,
+          timeout: 5000
+        })
+        .done(function(data) {
+          $("#body_box").html("<label id='finished_label'>File cloud upload plugin has been finished.</label>");
+          $("#body_box").css("text-align", "center");
+          $("#finished_label").css({"font-size": "30px", "color": "#000000"});
+        });
+      }
+    </script>
+
+    <div id="body_box">
+      <div id="head_box">
+        <button id="end_button" type="button" onclick="end()" class="i18n_END"></button>
+        <label id="head_label">File cloud upload</label>
+      </div>
+
+      <div id="upload_destination_box">
+        <label id="upload_destination" class="i18n_UPLOAD_DESTINATION"></label>
+      </div>
+
+      <div id="login_box" onclick="login()" class="item_box">
+        <form id="login_form" action="/index.html" method="post">
+          <input name="google_auth" value="google_auth" hidden/>
+          <table id="login_table" class="item_table">
+            <tr>
+              <td id="login_table_td_1" class="item_table_td_1">
+                <label id="upload_api_name" class="i18n_GOOGLE_PHOTO item_name"></label>
+              </td>
+              <td id="login_table_td_2" class="item_table_td_2">
+                <label id="upload_user_id" class="item_value"></label>
+              </td>
+            </tr>
+          </table>
+        </form>
+      </div>
+
+      <div id="timeout_box" onclick="timeout()" class="item_box">
+        <form id="timeout_form" action="/index.html" method="post">
+          <input name="timeout_page" value="timeout_page" hidden/>
+          <table id="timeout_table" class="item_table">
+            <tr>
+              <td id="timeout_table_td_1" class="item_table_td_1">
+                <label id="timeout_name" class="i18n_TIMEOUT item_name"></label>
+              </td>
+              <td id="timeout_table_td_2" class="item_table_td_2">
+                <label id="timeout_value" class="item_value"></label>
+              </td>
+            </tr>
+          </table>
+        </form>
+      </div>
+
+      <div id="progress_box">
+        <div id="progress_bar"></div>
+        <label id="progress_label"></label>
+      </div>
+
+      <div id="upload_button_box">
+        <button id="upload_start_button" type='button' onclick="upload()" class="i18n_UPLOAD_START upload_button"></button>
+        <button id="upload_stop_button" type='button' onclick="upload()" class="i18n_UPLOAD_STOP upload_button"></button>
+      </div>
+
+      <select id="no_operation_timeout_minute_text" hidden>
+        <option value="3">3</option>
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="-1" class="i18n_DISABLED"></option>
+      </select>
+    </div>
+  </body>
+</html>
+

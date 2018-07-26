@@ -1,0 +1,2 @@
+include ':app', ':pluginlibrary'
+project(':pluginlibrary').projectDir = new File(settingsDir, 'pluginsdk/pluginlibrary')

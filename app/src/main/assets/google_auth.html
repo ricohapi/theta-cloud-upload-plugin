@@ -1,0 +1,198 @@
+<html lang="ja">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>THETA360 setting</title>
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="js/jquery.i18n.properties.js"></script>
+    <script type="text/javascript" src="js/i18n.js"></script>
+    <meta name="viewport" content="width=750">
+    <link rel="stylesheet" type="text/css" href="css/google_auth_design.css">
+  </head>
+
+  <body>
+    <script>
+
+      var timer;
+
+      $(function(){
+        /* Embed multilingual strings */
+        updateMessage();
+
+        if ($("#is_logged_in").val() == "1") {
+          changeLoggedInPage();
+        } else {
+          changeNotLoggedInPage();
+        }
+      });
+
+      function changeNotLoggedInPage() {
+        if ($("#user_code").val() == "") {
+          changeErrorPage();
+          return;
+        }
+        $("#authentication_code").text(AUTHENTICATION_CODE + " : " + $("#user_code").val());
+        $("#authentication_code").show();
+        $("#authentication_error").hide();
+        $("#cancel_button").prop("disabled", false);
+        $("#done_button").prop("disabled", true);
+        $("#description_login_1").show();
+        $("#description_login_2").show();
+        $("#description_logout_1").hide();
+        $("#description_logout_2").hide();
+        $("#login_button").show();
+        $("#logout_button").hide();
+        $("#error_button").hide();
+      }
+
+      function changeLoggedInPage() {
+        $("#authentication_code").hide();
+        $("#authentication_error").hide();
+        $("#cancel_button").prop("disabled", true);
+        $("#done_button").prop("disabled", false);
+        $("#description_login_1").hide();
+        $("#description_login_2").hide();
+        $("#description_logout_1").show();
+        $("#description_logout_2").show();
+        $("#login_button").hide();
+        $("#logout_button").show();
+        $("#error_button").hide();
+      }
+
+      function changeErrorPage() {
+        $("#authentication_code").hide();
+        $("#authentication_error").show();
+        $("#cancel_button").prop("disabled", false);
+        $("#done_button").prop("disabled", true);
+        $("#description_login_1").show();
+        $("#description_login_2").show();
+        $("#description_logout_1").hide();
+        $("#description_logout_2").hide();
+        $("#login_button").hide();
+        $("#logout_button").hide();
+        $("#error_button").show();
+      }
+
+      function cancel() {
+        $.ajax({
+          url: '/cancel',
+          type: 'POST',
+          dataType: 'text',
+          cache: false,
+          timeout: 5000
+        })
+        .done(function(data) {
+          window.location.href = "/index.html";
+        });
+      }
+
+      function done() {
+        $.ajax({
+          url: '/done',
+          type: 'POST',
+          dataType: 'text',
+          cache: false,
+          timeout: 5000
+        })
+        .done(function(data) {
+          window.location.href = "/index.html";
+        });
+      }
+
+      function login() {
+        var childWindow = window.open('about:blank');
+        $.ajax({
+          url: '/login',
+          type: 'POST',
+          dataType: 'text',
+          cache: false,
+          timeout: 5000
+        })
+        .done(function(data) {
+          timer = setInterval("checkLoggedIn()", 1000);
+          childWindow.location.href = $("#google_auth_url").val();
+          childWindow = null;
+        });
+      }
+
+      function checkLoggedIn() {
+        $.ajax({
+          url: '/check_logged_in',
+          type: 'GET',
+          dataType: 'text',
+          cache: false,
+          timeout: 5000
+        })
+        .done(function(data) {
+          if (data == "1") {
+            clearInterval(timer);
+            changeLoggedInPage();
+          }
+        });
+      }
+
+      function logout() {
+        $.ajax({
+          url: '/logout',
+          type: 'GET',
+          dataType: 'json',
+          cache: false,
+          timeout: 5000
+        })
+        .done(function(data) {
+          $("#user_code").val(data["user_code"]);
+          $("#google_auth_url").val(data["google_auth_url"]);
+          changeNotLoggedInPage();
+        });
+      }
+
+      function reacquire() {
+        $.ajax({
+          url: '/reacquire',
+          type: 'GET',
+          dataType: 'json',
+          cache: false,
+          timeout: 5000
+        })
+        .done(function(data) {
+          $("#user_code").val(data["user_code"]);
+          $("#google_auth_url").val(data["google_auth_url"]);
+          changeNotLoggedInPage();
+        });
+      }
+    </script>
+
+    <div id="body_box">
+      <div id="head_box">
+        <button id="cancel_button" type="button" onclick="cancel()" class="i18n_CANCEL head_button"></button>
+        <label id="head_label" class="i18n_GOOGLE_PHOTO"></label>
+        <button id="done_button" type="button" onclick="done()" class="i18n_DONE head_button"></button>
+      </div>
+
+      <div id="description_box">
+        <label id="description_login_1" class="i18n_DESCRIPTION_LOGIN_1 description"></label>
+        <label id="description_login_2" class="i18n_DESCRIPTION_LOGIN_2 description"></label>
+        <label id="description_logout_1" class="i18n_DESCRIPTION_LOGOUT_1 description"></label>
+        <label id="description_logout_2" class="i18n_DESCRIPTION_LOGOUT_2 description"></label>
+      </div>
+
+      <div id="user_code_box">
+        <label id="authentication_code"></label>
+        <div id="authentication_error">
+          <label class="i18n_AUTHENTICATION_ERROR_1 error_message"></label>
+          <label class="i18n_AUTHENTICATION_ERROR_2 error_message"></label>
+        </div>
+      </div>
+
+      <div id="login_box">
+        <button id="login_button" type='button' onclick="login()" class="i18n_LOGIN login_button"></button>
+        <button id="logout_button" type='button' onclick="logout()" class="i18n_LOGOUT login_button"></button>
+        <button id="error_button" type='button' onclick="reacquire()" class="i18n_REACQUIRE login_button"></button>
+      </div>
+
+      <input id="is_logged_in" value="#IS_LOGGED_IN#" hidden/>
+      <input id="user_code" value="#GOOGLE_PHOTO_USER_CODE#" hidden/>
+      <input id="google_auth_url" value="#GOOGLE_PHOTO_CODE_AUTH_URL#" hidden/>
+    </div>
+  </body>
+</html>
+
